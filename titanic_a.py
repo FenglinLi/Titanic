@@ -7,6 +7,7 @@ Created on Tue Jun 20 15:48:36 2017
 #change work directory
 import os
 os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
+os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
 
 
 # Ignore warnings

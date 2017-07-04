@@ -6,6 +6,7 @@ Created on Mon Jul 03 14:22:53 2017
 """
 import os
 os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
+os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
 
 #import packages
 import pandas as pd
