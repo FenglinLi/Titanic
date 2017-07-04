@@ -6,7 +6,7 @@ Created on Thu Jun 29 13:51:17 2017
 """
 #set work directory
 import os
-os.chdir('c:\data')
+os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
 
 #import packages
 import pandas as pd

@@ -6,7 +6,7 @@ Created on Wed Jun 28 16:06:28 2017
 """
 
 import os
-os.chdir('c:\data')
+os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
 
 import numpy as np
 import pandas as pd
