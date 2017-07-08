@@ -70,3 +70,8 @@ data_train.Cabin.describe()
 #Embarked with Survived
 sns.barplot(x='Embarked', y="Survived", data=data_train);
 
+pd.crosstab(data_train['Title'], data_train['Sex'])
+
+pd.crosstab(data_train['Cabin'], data_train['Pclass'])
+
+

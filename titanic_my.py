@@ -6,13 +6,14 @@ Created on Thu Jun 29 13:51:17 2017
 """
 #set work directory
 import os
-#os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
-os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
+os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
+#os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
 
 #import packages
 import pandas as pd
 import seaborn as sns
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier 
 
 #Loading Data
 data_train = pd.read_csv('train.csv')
@@ -37,18 +38,65 @@ data_test['AgeBand'] = pd.cut(data_test['Age'], bins_age, labels=group_names_age
 for dataset in data_full:
     dataset['FamilySize'] = dataset['SibSp'] + dataset['Parch'] + 1
 
+#create IsAlone feature
+for dataset in data_full:
+    dataset['IsAlone'] = 0
+    dataset.loc[dataset['FamilySize'] == 1, 'IsAlone'] = 1
 
 #Fullfill fare in data_test and create Fareband
 data_test[ 'Fare' ] = data_test.Fare.fillna( data_test.Fare.mean() )
 group_names_fare = ['1', '2', '3', '4']
-bins_fare = (0, 10, 30, 100, 300)
+bins_fare = (0, 7.91, 14.454, 31, 300)
 data_train['FareBand'] = pd.cut(data_train['Fare'], bins_fare, labels=group_names_fare).astype(int)
 data_test['FareBand'] = pd.cut(data_test['Fare'], bins_fare, labels=group_names_fare).astype(int)
 
-#Fullfill Embarked and convert to number 
+#Fulfill Embarked and convert to number 
 freq_port = data_train.Embarked.dropna().mode()[0]
 for dataset in data_full:
     dataset['Embarked'] = dataset['Embarked'].fillna(freq_port)
     
 for dataset in data_full:
     dataset['Embarked'] = dataset['Embarked'].map( {'S': 1, 'Q': 2, 'C': 3} ).astype(int)
+    
+#extract title based on name feature
+for dataset in data_full:
+    dataset['Title'] = dataset.Name.str.extract(' ([A-Za-z]+)\.', expand=False)
+
+for dataset in data_full:
+    dataset['Title'] = dataset['Title'].replace(['Lady', 'Countess','Capt', 'Col',\
+ 	'Don', 'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer', 'Dona'], 'Rare')
+
+    dataset['Title'] = dataset['Title'].replace('Mlle', 'Miss')
+    dataset['Title'] = dataset['Title'].replace('Ms', 'Miss')
+    dataset['Title'] = dataset['Title'].replace('Mme', 'Mrs')
+
+title_mapping = {"Mr": 1, "Miss": 2, "Mrs": 3, "Master": 4, "Rare": 5}
+for dataset in data_full:
+    dataset['Title'] = dataset['Title'].map(title_mapping)
+    dataset['Title'] = dataset['Title'].fillna(0)
+
+#Fulfill cabin feature based on Fare
+    
+#Drop Cabin, Fare, Ticket, Parch, Name
+data_train = data_train.drop(['PassengerId', 'Ticket', 'Cabin', 'Fare', 'Name', 'Parch', 'Age', 'SibSp'], axis=1)
+data_test = data_test.drop(['Ticket', 'Cabin', 'Fare', 'Name', 'Parch', 'Age', 'SibSp'], axis=1)
+
+#Fit Model
+train_X = data_train.drop('Survived', axis=1)
+train_Y = data_train['Survived']
+test_X  = data_test.drop("PassengerId", axis=1).copy()
+
+random_forest = RandomForestClassifier(n_estimators=100)
+random_forest.fit(train_X, train_Y)
+acc_random_forest = round(random_forest.score(train_X, train_Y) * 100, 2)
+pred_Y = random_forest.predict(test_X)
+
+submission_my = pd.DataFrame({
+        "PassengerId": data_test["PassengerId"],
+        "Survived": pred_Y
+    })
+
+submission_my = submission_my.to_csv('submission_my.csv', index=False)
+
+
+
