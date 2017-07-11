@@ -6,14 +6,17 @@ Created on Thu Jun 29 13:51:17 2017
 """
 #set work directory
 import os
-os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
-#os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
+#os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
+os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
 
 #import packages
 import pandas as pd
 import seaborn as sns
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import make_scorer, accuracy_score
+from sklearn.model_selection import GridSearchCV
+
 
 #Loading Data
 data_train = pd.read_csv('train.csv')
@@ -85,6 +88,9 @@ data_test = data_test.drop(['Ticket', 'Cabin', 'Fare', 'Name', 'Parch', 'Age', '
 train_X = data_train.drop('Survived', axis=1)
 train_Y = data_train['Survived']
 test_X  = data_test.drop("PassengerId", axis=1).copy()
+
+
+
 
 random_forest = RandomForestClassifier(n_estimators=100)
 random_forest.fit(train_X, train_Y)
