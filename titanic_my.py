@@ -6,13 +6,9 @@ Created on Thu Jun 29 13:51:17 2017
 """
 #set work directory
 import os
-<<<<<<< HEAD
-os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
-#os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
-=======
-#os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
-os.chdir("C:\\Users\\lfl1001\\Documents\\GitHub\\Titanic")
->>>>>>> e91f9c551d9f719f2c7a02724c84f5ca1191e64f
+os.chdir('C:\\Users\\lif8\\Documents\\GitHub\\Titanic')
+#os.chdir('C:\\Users\\lfl1001\\Documents\\GitHub\\Titanic')
+
 
 #import packages
 import pandas as pd
@@ -94,28 +90,17 @@ data_test = data_test.drop(['Ticket', 'Cabin', 'Fare', 'Name', 'Parch', 'Age', '
 train_X = data_train.drop('Survived', axis=1)
 train_Y = data_train['Survived']
 
-#Split training data 
+#Split training data for cross validation
 from sklearn.model_selection import train_test_split
 
 train_XSAll = data_train.drop('Survived', axis=1)
-train_YAll = data_train['Survived']
+train_YSAll = data_train['Survived']
 
-X_train, X_test, y_train, y_test = train_test_split(X_all, y_all, test_size=num_test, random_state=23)
+num_test = 0.20
+train_XS, test_XS, train_YS, test_YS = train_test_split(train_XSAll, train_YSAll, test_size=num_test, random_state=23)
 
 test_X  = data_test.drop("PassengerId", axis=1).copy()
 
-<<<<<<< HEAD
-rf_params = {
-    'n_jobs': -1,
-    'n_estimators': 500,
-     'warm_start': True, 
-     #'max_features': 0.2,
-    'max_depth': 6,
-    'min_samples_leaf': 2,
-    'max_features' : 'sqrt',
-    'verbose': 0
-}
-=======
 clf = RandomForestClassifier()
 
 parameters = {'n_estimators': [4, 6, 9], 
@@ -129,18 +114,41 @@ parameters = {'n_estimators': [4, 6, 9],
 acc_scorer = make_scorer(accuracy_score)
 
 grid_obj = GridSearchCV(clf, parameters, scoring=acc_scorer)
-grid_obj = grid_obj.fit(train_X, train_Y)
+grid_obj = grid_obj.fit(train_XS, train_YS)
 
-clf.fit(train_X, train_Y)
+clf.fit(train_XS, train_YS)
 
-predictions = clf.predict(test_X)
-print(accuracy_score(test_Y, predictions))
->>>>>>> e91f9c551d9f719f2c7a02724c84f5ca1191e64f
+predictions = clf.predict(test_XS)
+print(accuracy_score(test_YS, predictions))
 
-random_forest = RandomForestClassifier(n_estimators=100)
-random_forest.fit(train_X, train_Y)
-acc_random_forest = round(random_forest.score(train_X, train_Y) * 100, 2)
-pred_Y = random_forest.predict(test_X)
+#Validate with KFold
+from sklearn.cross_validation import KFold
+
+def run_kfold(clf):
+    kf = KFold(891, n_folds=10)
+    outcomes = []
+    fold = 0
+    for train_index, test_index in kf:
+        fold += 1
+        train_XS, test_XS = train_XSAll.values[train_index], train_XSAll.values[test_index]
+        train_YS, test_YS = train_YSAll.values[train_index], train_YSAll.values[test_index]
+        clf.fit(train_XS, train_YS)
+        predictions = clf.predict(test_XS)
+        accuracy = accuracy_score(test_YS, predictions)
+        outcomes.append(accuracy)
+        print("Fold {0} accuracy: {1}".format(fold, accuracy))     
+    mean_outcome = np.mean(outcomes)
+    print("Mean Accuracy: {0}".format(mean_outcome)) 
+
+run_kfold(clf)
+
+pred_Y = clf.predict(data_test.drop('PassengerId', axis=1))
+
+
+#random_forest = RandomForestClassifier(n_estimators=100)
+#random_forest.fit(train_X, train_Y)
+#acc_random_forest = round(random_forest.score(train_X, train_Y) * 100, 2)
+#pred_Y = random_forest.predict(test_X)
 
 submission_my = pd.DataFrame({
         "PassengerId": data_test["PassengerId"],

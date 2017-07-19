@@ -5,8 +5,8 @@ Created on Mon Jul 10 16:07:23 2017
 @author: lfl1001
 """
 import os
-#os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
-os.chdir('C:\\Users\\lfl1001\\Documents\\GitHub\\Titanic')
+os.chdir('C:\\Users\\lif8\\Documents\\GitHub\\Titanic')
+#os.chdir('C:\\Users\\lfl1001\\Documents\\GitHub\\Titanic')
 
 import pandas as pd
 import xgboost as xgb
