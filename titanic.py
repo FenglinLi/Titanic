@@ -5,7 +5,7 @@ Created on Fri Jun 02 15:44:30 2017
 @author: lif8
 """
 import os
-os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
+#os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
 os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
 
 # data analysis and wrangling
