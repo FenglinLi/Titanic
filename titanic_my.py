@@ -7,7 +7,7 @@ Created on Thu Jun 29 13:51:17 2017
 #set work directory
 import os
 #os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
-os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
+os.chdir("C:\\Users\\lfl1001\\Documents\\GitHub\\Titanic")
 
 #import packages
 import pandas as pd
@@ -49,9 +49,10 @@ for dataset in data_full:
 #Fullfill fare in data_test and create Fareband
 data_test[ 'Fare' ] = data_test.Fare.fillna( data_test.Fare.mean() )
 group_names_fare = ['1', '2', '3', '4']
-bins_fare = (0, 7.91, 14.454, 31, 300)
+bins_fare = (-10, 7.91, 14.454, 31, 600)
 data_train['FareBand'] = pd.cut(data_train['Fare'], bins_fare, labels=group_names_fare).astype(int)
 data_test['FareBand'] = pd.cut(data_test['Fare'], bins_fare, labels=group_names_fare).astype(int)
+
 
 #Fulfill Embarked and convert to number 
 freq_port = data_train.Embarked.dropna().mode()[0]
@@ -59,7 +60,7 @@ for dataset in data_full:
     dataset['Embarked'] = dataset['Embarked'].fillna(freq_port)
     
 for dataset in data_full:
-    dataset['Embarked'] = dataset['Embarked'].map( {'S': 1, 'Q': 2, 'C': 3} ).astype(int)
+    dataset['Embarked'] = dataset['Embarked'].map( {'S': 1, 'Q': 2, 'C': 3} )
     
 #extract title based on name feature
 for dataset in data_full:
@@ -87,10 +88,36 @@ data_test = data_test.drop(['Ticket', 'Cabin', 'Fare', 'Name', 'Parch', 'Age', '
 #Fit Model
 train_X = data_train.drop('Survived', axis=1)
 train_Y = data_train['Survived']
+
+#Split training data 
+from sklearn.model_selection import train_test_split
+
+train_XSAll = data_train.drop('Survived', axis=1)
+train_YAll = data_train['Survived']
+
+X_train, X_test, y_train, y_test = train_test_split(X_all, y_all, test_size=num_test, random_state=23)
+
 test_X  = data_test.drop("PassengerId", axis=1).copy()
 
+clf = RandomForestClassifier()
 
+parameters = {'n_estimators': [4, 6, 9], 
+              'max_features': ['log2', 'sqrt','auto'], 
+              'criterion': ['entropy', 'gini'],
+              'max_depth': [2, 3, 5, 10], 
+              'min_samples_split': [2, 3, 5],
+              'min_samples_leaf': [1,5,8]
+             }
 
+acc_scorer = make_scorer(accuracy_score)
+
+grid_obj = GridSearchCV(clf, parameters, scoring=acc_scorer)
+grid_obj = grid_obj.fit(train_X, train_Y)
+
+clf.fit(train_X, train_Y)
+
+predictions = clf.predict(test_X)
+print(accuracy_score(test_Y, predictions))
 
 random_forest = RandomForestClassifier(n_estimators=100)
 random_forest.fit(train_X, train_Y)
