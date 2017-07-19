@@ -6,8 +6,8 @@ Created on Thu Jun 29 13:51:17 2017
 """
 #set work directory
 import os
-#os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
-os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
+os.chdir('C:\Users\lif8\Documents\GitHub\Titanic')
+#os.chdir('C:\Users\lfl1001\Documents\GitHub\Titanic')
 
 #import packages
 import pandas as pd
@@ -89,8 +89,16 @@ train_X = data_train.drop('Survived', axis=1)
 train_Y = data_train['Survived']
 test_X  = data_test.drop("PassengerId", axis=1).copy()
 
-
-
+rf_params = {
+    'n_jobs': -1,
+    'n_estimators': 500,
+     'warm_start': True, 
+     #'max_features': 0.2,
+    'max_depth': 6,
+    'min_samples_leaf': 2,
+    'max_features' : 'sqrt',
+    'verbose': 0
+}
 
 random_forest = RandomForestClassifier(n_estimators=100)
 random_forest.fit(train_X, train_Y)
