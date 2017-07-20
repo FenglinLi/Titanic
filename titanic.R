@@ -5,8 +5,8 @@ library('dplyr') # data manipulation
 library('mice') # imputation
 library('randomForest') # classification algorithm
 
-train <- read.csv(file='c:/data/train.csv', stringsAsFactors = F)
-test  <- read.csv(file='c:/data/test.csv', stringsAsFactors = F)
+train <- read.csv(file='C:\Users\lif8\Documents\GitHub\Titanic\train.csv', stringsAsFactors = F)
+test  <- read.csv(file='C:\Users\lif8\Documents\GitHub\Titanic\test.csv', stringsAsFactors = F)
 
 full  <- bind_rows(train, test) # bind training & test data
 
